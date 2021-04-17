@@ -87,6 +87,10 @@ RCT_EXPORT_METHOD(showSectionById:(NSString *)sectionId)
 RCT_EXPORT_METHOD(showFAQsWithCIFs:(NSDictionary *)cifs)
 {
     HelpshiftAPIConfigBuilder *builder = [[HelpshiftAPIConfigBuilder alloc] init];
+    if(cifs[@"enableContactUs"]){
+          builder.enableContactUs = HsEnableContactUsAfterMarkingAnswerUnhelpful;
+    }
+
     builder.customIssueFields = cifs;
     HelpshiftAPIConfig *apiConfig = [builder build];
     UIViewController *rootController = UIApplication.sharedApplication.delegate.window.rootViewController;
@@ -187,17 +191,17 @@ RCT_CUSTOM_VIEW_PROPERTY(config, NSDictionary, RNTHelpshiftManager) {
         if (user[@"authToken"]) userBuilder.authToken = user[@"authToken"];
         [HelpshiftCore login:userBuilder.build];
     }
-    
+
     // Get the Helpshift conversation view controller.
     HelpshiftAPIConfigBuilder *builder = [HelpshiftAPIConfigBuilder new];
     // Add CIFS if existing
     if (json[@"cifs"]) builder.customIssueFields = json[@"cifs"];
     [HelpshiftSupport conversationViewControllerWithConfig:[builder build] completion:^(UIViewController *conversationVC) {
         UIViewController *rootController = UIApplication.sharedApplication.delegate.window.rootViewController;
-        
+
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:conversationVC];
         [navController willMoveToParentViewController:rootController];
-        
+
         if (json[@"height"] && json[@"width"]) {
             float height = [json[@"height"] floatValue];
             float width = [json[@"width"] floatValue];

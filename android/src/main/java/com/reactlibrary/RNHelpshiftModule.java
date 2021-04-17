@@ -129,8 +129,16 @@ public class RNHelpshiftModule extends ReactContextBaseJavaModule implements Sup
     @ReactMethod
     public void showFAQsWithCIFs(ReadableMap cifs){
         final Activity activity = getCurrentActivity();
-        ApiConfig apiConfig = new ApiConfig.Builder().setCustomIssueFields(getCustomIssueFields(cifs)).build();
-        Support.showFAQs(activity, apiConfig);
+        if(cifs.hasKey("enableContactUs")){
+            ApiConfig apiConfig = new ApiConfig.Builder()
+                    .setCustomIssueFields(getCustomIssueFields(cifs))
+                    .setEnableContactUs(Support.EnableContactUs.AFTER_MARKING_ANSWER_UNHELPFUL)
+                    .build();
+            Support.showFAQs(activity, apiConfig);
+        }else{
+            ApiConfig apiConfig = new ApiConfig.Builder().setCustomIssueFields(getCustomIssueFields(cifs)).build();
+            Support.showFAQs(activity, apiConfig);
+        }
     }
 
     @ReactMethod
